@@ -18,15 +18,25 @@ function stringToHTML (str) {
     let parser = new DOMParser();
     let doc = parser.parseFromString(str, 'text/html');
 
-    // If there are items in the head, move them to the body
+	return doc;
+}
+
+/**
+ * Move template header items into body
+ * @param  {Document} doc The template document
+ * @return {Element}      The template HTML
+ */
+
+function moveTemplateHeaderToBody (doc) {
+
+	// If there are items in the head, move them to the body
     if (doc.head && doc.head.childNodes.length) {
         Array.from(doc.head.childNodes).reverse().forEach(function (node) {
             doc.body.insertBefore(node, doc.body.firstChild);
         });
     }
 
-    return doc.body || document.createElement('body');
-
+	return doc.body || document.createElement('body');
 }
 
 /**
@@ -382,13 +392,17 @@ function diff (template, existing, events) {
 
 /**
  * Render a template into the UI
- * @param  {Node|String} elem     The element or selector to render the template into
- * @param  {String}      template The template to render
- * @param  {Object}      events   The allowed event functions
+ * @param  {Node|String}     elem     The element or selector to render the template into
+ * @param  {Document|String} template The template to render
+ * @param  {Object}          events   The allowed event functions
  */
 function render (elem, template, events) {
 	let node = getElem(elem);
-	let html = stringToHTML(template);
+	let html
+	if (template instanceof String) {
+		html = stringToHTML(template);
+	}
+	html = moveTemplateHeaderToBody(html);
 	if (!emit('before-render', null, node)) return;
 	diff(html, node, events);
 	emit('render', null, node);
