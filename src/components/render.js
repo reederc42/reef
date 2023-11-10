@@ -344,7 +344,7 @@ function diff (template, existing, events) {
 		diffAttributes(node, existingNodes[index], events);
 
 		// Stop diffing if a native web component
-		if (node.nodeName.includes('-')) return;
+		// if (node.nodeName.includes('-')) return;
 
 		// If content is different, update it
 		let templateContent = getNodeContent(node);
